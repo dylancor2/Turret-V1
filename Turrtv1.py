@@ -30,11 +30,26 @@ def decrementx():
     data = arduino.readline()
     print(data)
 
+def resetAll():
+    arduino.write(b'5')
+    time.sleep(0.1)
+    data = arduino.readline()
+    print(data)
+
+def shoot():
+    arduino.write(b'6')
+    time.sleep(0.1)
+    data = arduino.readline()
+    print(data)
+
 keyboard.add_hotkey('up', lambda: incrementY())
 keyboard.add_hotkey('down', lambda: decrementY())
 
 keyboard.add_hotkey('left', lambda: incrementX())
 keyboard.add_hotkey('right', lambda: decrementx())
+keyboard.add_hotkey('r', lambda: resetAll())
+keyboard.add_hotkey('space', lambda: shoot())
+
 keyboard.wait('esc')
 print('Exiting...')
-arduino.write(b'5')
+arduino.write(b'7')
