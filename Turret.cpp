@@ -10,7 +10,10 @@ int step1 = 8;
 int step2 = 9;
 int step3 = 10;
 int step4 = 11;
-Servo x;
+
+bool shot;
+
+Servo x, st1, st2;
 Stepper y(2048, step1, step3, step2, step4);
 
 
@@ -19,14 +22,19 @@ void setup() {
   pinMode(ledpin, OUTPUT);
   digitalWrite(ledpin, LOW);
   x.attach(servopin);
+  
+  st1.attach(6);
+  st2.attach(5);
+  
   y.setSpeed(5);
+  
   Serial.begin(9600);
   while(!Serial){
     ;
   }
   digitalWrite(ledpin, HIGH);
   Serial.println("Connection is good");
-  resetX();
+  resetAll();
 }
 
 void loop() {
@@ -36,7 +44,8 @@ void loop() {
    * 2 - 50 - down (y)
    * 3 - 51 - up (x)
    * 4 - 52 - down (y)
-   * 5 - 53 - done
+   * 5 - 53 - resetAll
+   * 6 - 54 - Shoot gun
    */
   if (Serial.available() > 0) {
     serInfo = Serial.read();
@@ -60,7 +69,15 @@ void loop() {
       break;
     }
     case 53:{
-      done();
+      resetAll();
+      break;
+    }
+    case 54:{
+      shoot();
+      break;
+    }
+    case 55:{
+      last();
       break;
     }
   }
@@ -84,17 +101,36 @@ void yDown(){
 void xUp(){
   if(xpos < 180){
     x.write(xpos+3);
-    xpos+=5;
+    xpos+=3;
   }
 }
 
 void xDown(){
   if(xpos > 0){
     x.write(xpos-3);
-    xpos-=5;
+    xpos-=3;
   }
 }
 
-void done(){
+void resetAll(){
   digitalWrite(ledpin, LOW);
+  x.write(90);
+  xpos = 90;
+  st1.write(180);
+  st2.write(0);
+  digitalWrite(ledpin, HIGH);
 }
+
+void last(){
+  digitalWrite(ledpin, LOW);
+  x.write(90);
+  xpos = 90;
+  st1.write(180);
+  st2.write(0);
+}
+
+void shoot(){
+  st1.write(0);
+  st2.write(90);
+}
+
